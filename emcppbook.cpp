@@ -19,6 +19,9 @@ using namespace std;
 #include <cstring>
 #include <ostream>
 
+
+
+
 #ifndef _MSC_VER
 #  if __cplusplus < 201103
 #    define CONSTEXPR11_TN
