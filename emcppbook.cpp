@@ -22,7 +22,9 @@ std::string boost_type_name()
 //PART1_4 displaing types
 //PART2_1 auto more prefereable
 //PART2_2 auto is bad
-#define PART2_2
+//PART3_1 {} () = 
+//PART3_2 nullptr instead NULL and 0
+#define PART3_2
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -88,6 +90,23 @@ struct Widjet { char* name; };
 #include <type_traits>
 #endif
 
+#ifdef PART3_1
+#include <string>
+class bracer
+{public:
+    bracer() { cout << "default constructor"<<endl; }
+    bracer(string str) {cout<<"one arg constructor : " << str << endl;}
+    bracer(string str1, string str2) {cout << "two arg constructor :" << str1 << str2 << endl;}
+    bracer(const bracer& br) { cout << "copy constructor" << endl; }
+    bracer& operator=(const bracer& other) { cout << "operator= overloading" << endl; return *this; }
+    bracer(initializer_list<string> il) { cout << "initializer list constructor" << endl; }
+};
+
+#endif
+
+#ifdef PART3_2
+
+#endif
 
 
 int main()
@@ -234,7 +253,7 @@ int main()
    cout << lambdaF(4, 3) << endl;
 
 
-#endif // 
+#endif 
 
 #ifdef PART2_2
    vector<char> vecChar = { 'a','b','c' };
@@ -249,6 +268,36 @@ int main()
    cout << std::is_same<decltype(c),char>::value << endl;
    cout << std::is_same<decltype(i),int>::value << endl;
    cout << std::is_same<decltype(b),bool>::value << endl;
+ 
+#endif
+
+#ifdef PART3_1
+
+   bracer a; 
+   bracer b{};
+   a = b;
+   bracer c(" 123 ");
+   bracer d = c;
+  
+   bracer e();//function
+
+   bracer f( "1","2" );
+   bracer g{ "3","4" };
+   bracer h{ {} };
+   bracer i({});
+
+#endif
+
+#ifdef PART3_2
+   
+   auto x = { nullptr };
+   auto y = { 0 };
+   auto z = { NULL };
+   auto c = { false };
+   cout << boost_type_name<decltype(x)><<endl;
+   cout << boost_type_name<decltype(y)> << endl;
+   cout << boost_type_name<decltype(z)> << endl;
+   cout << boost_type_name<decltype(c)> << endl;
  
 #endif
 
