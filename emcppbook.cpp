@@ -24,7 +24,7 @@ std::string boost_type_name()
 //PART2_2 auto is bad
 //PART3_1 {} () = 
 //PART3_2 nullptr instead NULL and 0
-#define PART3_2
+#define PART3_4
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -104,7 +104,24 @@ class bracer
 
 #endif
 
-#ifdef PART3_2
+#ifdef PART3_3
+#include <string>
+
+void f(int x, const std::string& st) { cout << x << st << endl; };
+typedef void (*FPTD)(int, const std::string&);
+using FPU = void(*) (int, const std::string&);
+
+#include< map>
+#include <vector>
+
+template<typename T>
+using mapVec = map<vector<T>, T>;
+
+#endif
+
+#ifdef PART3_4
+
+
 
 #endif
 
@@ -301,5 +318,30 @@ int main()
  
 #endif
 
+#ifdef PART3_3
+
+   f(1, "23");
+
+   FPTD ff=f;
+   FPU fu = f;
+   
+   ff(4, std::string("56"));
+   fu(7, std::string("89"));
+
+
+   mapVec<int> mv{ {{1, 2, 3, 4},10} };
+   cout << mv[{1, 2, 3, 4}] << endl;
+
+#endif
+
+#ifdef PART3_4
+   enum class iEnum: int { a=1, b=2, c=3 };
+   cout << static_cast<int>(iEnum::b) << endl;
+
+   constexpr auto lambda = []<typename E>(E enumerator) { return static_cast<underlying_type_t<E>>(enumerator); };
+   cout << lambda(iEnum::c);
+
+
+#endif
     return 0;
 }
