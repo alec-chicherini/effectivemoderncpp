@@ -24,7 +24,11 @@ std::string boost_type_name()
 //PART2_2 auto is bad
 //PART3_1 {} () = 
 //PART3_2 nullptr instead NULL and 0
-#define PART3_4
+//PART3_3 using insted typedef
+//PART3_4 enums
+//PART3_5 =deleted
+//PART3_6 override
+#define PART3_6
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -119,9 +123,50 @@ using mapVec = map<vector<T>, T>;
 
 #endif
 
-#ifdef PART3_4
+#ifdef PART3_5
+#include<iostream>
+template<class T>
+class deleters
+{
+public: 
+    deleters<T>& operator=(const deleters<T>&) = delete;
+    deleters<T>(const deleters<T>&) = delete;
+    deleters<T>(T _t) : var(_t) {};
+
+private:
+    T var;
+};
 
 
+#endif
+
+#ifdef PART3_6
+
+class Base
+{
+
+public:
+    //virtual int doWork() { std::cout << "Base::doWork\n"; };
+    virtual int& doWork()&   { std::cout << "Base::doWork&::data "  << data << endl; return data; };
+    virtual int&& doWork()&& { std::cout << "Base::doWork&&::data " << data << endl; return std::move(data); };
+    Base&& takeObject() { return std::move(*this); }
+private:
+private:
+    int data = 1;
+};
+
+class Derived :public Base
+{
+
+public:
+   // virtual int doWork()  { std::cout << "Derived::doWork\n"; };
+    virtual int& doWork()&   { std::cout << "Derived::doWork::data "   << data << endl;  return data; };
+    //virtual int&& doWork()&& { std::cout << "Derived::doWork&&::data " << data << endl;  return std::move(data); };
+
+    Derived&& takeObject() { return std::move(*this); }
+private:
+    int data = 2;
+};
 
 #endif
 
@@ -189,7 +234,6 @@ int main()
 
 #endif
 
-
 #ifdef PART1_2
 
     auto x(20); cout << boost_type_name<decltype(x)>() << endl;
@@ -200,7 +244,6 @@ int main()
     auto b = { 20 }; cout << boost_type_name<decltype(b)>() << endl;
 
 #endif
-
 
 #ifdef PART1_3
 
@@ -233,7 +276,6 @@ int main()
 
 
 #endif
-
 
 #ifdef PART1_4
     int x = 5;
@@ -342,6 +384,35 @@ int main()
    cout << lambda(iEnum::c);
 
 
+#endif
+
+#ifdef PART3_5
+
+  //deleters<int> dINT;   //error:no default constructor exists for class "deleters<int>"
+   deleters<int> dINT2(4);
+   deleters<int> dINT3(5);
+   //dINT2 = dINT3;	//error: function "deleters<T>::operator=(const deleters<T> &) [with T=int]"  cannot be referenced -- it is a deleted function
+
+#endif
+
+#ifdef PART3_6
+
+
+   std::unique_ptr<Base>    ptrBD = std::make_unique <Derived>();
+   std::unique_ptr<Base>    ptrBB = std::make_unique <Base>();
+   std::unique_ptr<Derived> ptrDD = std::make_unique <Derived>();
+
+   //lvalue version call
+   ptrBB.get()->doWork();
+   ptrBD.get()->doWork();
+   ptrDD.get()->doWork();
+
+   //rvalue version call
+   ptrBB.get()->takeObject().doWork();
+   ptrBD.get()->takeObject().doWork();
+   //ptrDD.get()->takeObject().doWork();
+ 
+  
 #endif
     return 0;
 }
