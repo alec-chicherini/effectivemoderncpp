@@ -28,7 +28,9 @@ std::string boost_type_name()
 //PART3_4 enums
 //PART3_5 =deleted
 //PART3_6 override
-#define PART3_6
+//PART3_7 ::iterator -> ::const_iterator
+//PART3_8 noexcept
+#define PART3_8
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -168,6 +170,14 @@ private:
     int data = 2;
 };
 
+#endif
+
+#ifdef PART3_7
+#include <vector>
+#endif
+
+#ifdef PART3_8
+ void func()noexcept {};
 #endif
 
 
@@ -413,6 +423,21 @@ int main()
    //ptrDD.get()->takeObject().doWork();
  
   
+#endif
+
+#ifdef PART3_7
+   vector<int> vec = {0,1,2,3,4,5 };
+   auto iter = std::find_if(vec.cbegin(), vec.cend(), [](const int i) {return i % 2; });
+   //*iter = -1;
+   std::cout << *iter;
+#endif
+
+
+#ifdef PART3_8
+    auto lambda = []() {};
+    cout << noexcept(lambda())<<endl;
+    cout << noexcept(func());
+
 #endif
     return 0;
 }
