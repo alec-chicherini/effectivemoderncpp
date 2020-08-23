@@ -30,7 +30,9 @@ std::string boost_type_name()
 //PART3_6 override
 //PART3_7 ::iterator -> ::const_iterator
 //PART3_8 noexcept
-#define PART3_8
+//PART3_9 constexpr
+//PART3_10 const functions - thread free
+#define PART3_10
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -178,6 +180,38 @@ private:
 
 #ifdef PART3_8
  void func()noexcept {};
+#endif
+
+#ifdef PART3_9
+ class X
+ {
+      int value;
+    public:
+        constexpr X(const int value_)  noexcept:value(value_){};
+        constexpr const int mul(const X& x) const  noexcept{ return value * x.value; }
+ };
+
+#endif
+
+#ifdef PART3_10
+#include <mutex>
+#include <chrono>
+ class X
+ {
+     static int x;
+ public:
+     void const inc() 
+     {
+        // std::lock_guard<std::mutex> lg(mx);
+
+         std::cout << x++ <<std::endl;
+         std::this_thread::sleep_for(std::chrono::seconds(1));
+     }
+        // mutable std::mutex mx;
+ };
+
+ int X::x = { 0 };
+
 #endif
 
 
@@ -439,5 +473,39 @@ int main()
     cout << noexcept(func());
 
 #endif
+
+#ifdef PART3_9
+
+    constexpr const  X x(4);
+    constexpr auto y = x.mul(2);
+    std::cout << y;
+#endif // PART3_9
+
+#ifdef PART3_10
+
+
+    X x;
+    x.inc();
+    x.inc();
+    x.inc();
+    x.inc();
+    x.inc();
+
+    thread a([&]() {x.inc();});
+    thread b([&]() {x.inc(); });
+    thread c([&]() {x.inc(); });
+    thread d([&]() {x.inc(); });
+    thread e([&]() {x.inc(); });
+
+    a.join();
+    b.join();
+    c.join();
+    d.join();
+    e.join();
+
+
+
+#endif
+
     return 0;
 }
