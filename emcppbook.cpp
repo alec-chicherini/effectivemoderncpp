@@ -32,7 +32,8 @@ std::string boost_type_name()
 //PART3_8 noexcept
 //PART3_9 constexpr
 //PART3_10 const functions - thread free
-#define PART3_10
+//PART3_11 special funcs
+#define PART3_11
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -212,6 +213,20 @@ private:
 
  int X::x = { 0 };
 
+#endif
+
+#ifdef PART3_11
+ class test
+ {
+ public:
+     test() { std::cout << "ctor->"; };//ctor
+     ~test() { std::cout << "dtor|"; };//dtor
+     test(const test& rhs) {};//copy 
+     test& operator=( test& rhs) { std::cout << "copy assignment->"; return rhs;};//copy assignment 
+
+     test(test&& rhs) {};//move 
+     test& operator=(test&& rhs) { std::cout << "move assignment->"; return rhs; };// move assignment 
+ };
 #endif
 
 
@@ -466,7 +481,6 @@ int main()
    std::cout << *iter;
 #endif
 
-
 #ifdef PART3_8
     auto lambda = []() {};
     cout << noexcept(lambda())<<endl;
@@ -504,6 +518,23 @@ int main()
     e.join();
 
 
+
+#endif
+
+#ifdef PART3_11
+    std::cout << "t#";
+    test t;
+    std::cout << std::endl;
+    std::cout << "tt#";
+    test tt;
+    std::cout << std::endl;
+    std::cout << "move#";
+    t=test();
+    std::cout << std::endl;
+    std::cout << "copy#";
+    t=tt;
+    std::cout << std::endl;
+   
 
 #endif
 
