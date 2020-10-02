@@ -33,7 +33,9 @@ std::string boost_type_name()
 //PART3_9 constexpr
 //PART3_10 const functions - thread free
 //PART3_11 special funcs
-#define PART3_11
+//PART4_1 unique_ptr 
+//PART3_2 shared_ptr 
+#define PART4_2
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -227,6 +229,20 @@ private:
      test(test&& rhs) {};//move 
      test& operator=(test&& rhs) { std::cout << "move assignment->"; return rhs; };// move assignment 
  };
+#endif
+
+#ifdef PART4_2
+#include <vector>
+#include <memory>
+ class X:public std::enable_shared_from_this<X>
+ {
+     int _x;
+     vector<shared_ptr<X>> vec;
+ public:
+     X(int&& x) :_x(x) {};
+     void add_vec() {vec.emplace_back(shared_from_this()); };
+ };
+
 #endif
 
 
@@ -535,6 +551,30 @@ int main()
     t=tt;
     std::cout << std::endl;
    
+#endif
+
+#ifdef PART4_2
+    X x(12345);
+
+    
+    shared_ptr<X> ptr1 = make_shared<X>(x);
+    cout << ptr1.use_count() << endl;
+    cout  << endl;
+
+    shared_ptr<X> ptr2 = ptr1;
+    cout << ptr1.use_count() << endl;
+    cout << ptr2.use_count() << endl;
+    cout << endl;
+
+    shared_ptr<X> ptr3 = std::move(ptr2);
+    cout << ptr1.use_count() << endl;
+    cout << ptr2.use_count() << endl;
+    cout << ptr3.use_count() << endl;
+    
+
+    ptr1.get()->add_vec();
+    //ptr2.get()->add_vec();
+    ptr3.get()->add_vec();
 
 #endif
 
