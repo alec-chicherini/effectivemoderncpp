@@ -35,7 +35,7 @@ std::string boost_type_name()
 //PART3_11 special funcs
 //PART4_1 unique_ptr 
 //PART3_2 shared_ptr 
-#define PART4_2
+#define PART4_1
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -230,6 +230,18 @@ private:
      test& operator=(test&& rhs) { std::cout << "move assignment->"; return rhs; };// move assignment 
  };
 #endif
+ 
+#ifdef PART4_1
+ auto deleter = [](int* data)
+ {
+     std::cout << "deleter call" << endl;
+     delete data;
+ };
+ 
+
+
+#endif
+
 
 #ifdef PART4_2
 #include <vector>
@@ -551,6 +563,17 @@ int main()
     t=tt;
     std::cout << std::endl;
    
+#endif
+
+#ifdef PART4_1
+
+    std::unique_ptr<int> int_u_ptr = std::make_unique<int>(4);
+    std::cout << "int_u_ptr = " << *int_u_ptr.get() << std::endl;
+
+    std::unique_ptr<int,decltype(deleter)> int_u_ptr_deleter;
+    int_u_ptr_deleter.reset(new int(5));
+    std::cout << "int_u_ptr_deleter = " << *int_u_ptr_deleter.get()<<std::endl;
+
 #endif
 
 #ifdef PART4_2
