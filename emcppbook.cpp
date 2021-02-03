@@ -35,7 +35,8 @@ std::string boost_type_name()
 //PART3_11 special funcs
 //PART4_1 unique_ptr 
 //PART3_2 shared_ptr 
-#define PART4_1
+
+#define PART4_2
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -234,10 +235,16 @@ private:
 #ifdef PART4_1
  auto deleter = [](int* data)
  {
-     std::cout << "deleter call" << endl;
+     std::cout << "auto deleter call" << endl;
      delete data;
  };
  
+ void deleter2(int* data)
+ {
+     std::cout << "func deleter call" << endl;
+     delete data;
+ 
+ };
 
 
 #endif
@@ -249,72 +256,72 @@ private:
  class X:public std::enable_shared_from_this<X>
  {
      int _x;
-     vector<shared_ptr<X>> vec;
+     
  public:
      X(int&& x) :_x(x) {};
-     void add_vec() {vec.emplace_back(shared_from_this()); };
+     auto from_this() {return shared_from_this(); };
  };
 
 #endif
 
 
-int main()
-{
+ int main()
+ {
 
 #ifdef PART1_1
 
-    //general
-    int x = 12;
-    int& sx = x;
-    const int cx = x;
-    const int& rx = x;
+     //general
+     int x = 12;
+     int& sx = x;
+     const int cx = x;
+     const int& rx = x;
 
-    //pointers
-    int* ptr = &x;
-    int* const ptrc1 = &x;
-    const int* ptrc2 = &x;
-    const int* const ptrcc = &x;
+     //pointers
+     int* ptr = &x;
+     int* const ptrc1 = &x;
+     const int* ptrc2 = &x;
+     const int* const ptrcc = &x;
 
-    //arrays
-    int arr[] = { 1,2,3 };
-    int* ptrToArr = arr;
+     //arrays
+     int arr[] = { 1,2,3 };
+     int* ptrToArr = arr;
 
-    const int carr[] = { 1,2 };
-    const int* ptrToCArr = arr;
+     const int carr[] = { 1,2 };
+     const int* ptrToCArr = arr;
 
-    std::cout << "template<typename T>" << endl
+     std::cout << "template<typename T>" << endl
 #ifdef TYPE_T
-        << "void f(T param)"
+         << "void f(T param)"
 #endif
 #ifdef TYPE_T_LREF
-        << "void f(T& param)"
+         << "void f(T& param)"
 #endif
 #ifdef TYPE_T_RREF
-        << "void f(T&& param)"
+         << "void f(T&& param)"
 #endif
-        << endl;
+         << endl;
 
-    std::cout << "type passed to f | T type| param type" << endl;
-    std::cout << boost_type_name<decltype(x)>(); f(x);
-    std::cout << boost_type_name<decltype(sx)>(); f(sx);
-    std::cout << boost_type_name<decltype(cx)>(); f(cx);
-    std::cout << boost_type_name<decltype(rx)>(); f(rx);
+     std::cout << "type passed to f | T type| param type" << endl;
+     std::cout << boost_type_name<decltype(x)>(); f(x);
+     std::cout << boost_type_name<decltype(sx)>(); f(sx);
+     std::cout << boost_type_name<decltype(cx)>(); f(cx);
+     std::cout << boost_type_name<decltype(rx)>(); f(rx);
 
-    std::cout << boost_type_name<decltype(ptr)>(); f(ptr);
-    std::cout << boost_type_name<decltype(ptrc1)>(); f(ptrc1);
-    std::cout << boost_type_name<decltype(ptrc2)>(); f(ptrc2);
-    std::cout << boost_type_name<decltype(ptrcc)>(); f(ptrcc);
+     std::cout << boost_type_name<decltype(ptr)>(); f(ptr);
+     std::cout << boost_type_name<decltype(ptrc1)>(); f(ptrc1);
+     std::cout << boost_type_name<decltype(ptrc2)>(); f(ptrc2);
+     std::cout << boost_type_name<decltype(ptrcc)>(); f(ptrcc);
 
-    std::cout << boost_type_name<decltype(arr)>(); f(arr);
-    std::cout << boost_type_name<decltype(ptrToArr)>(); f(ptrToArr);
-    std::cout << boost_type_name<decltype(carr)>(); f(carr);
-    std::cout << boost_type_name<decltype(ptrToCArr)>(); f(ptrToCArr);
+     std::cout << boost_type_name<decltype(arr)>(); f(arr);
+     std::cout << boost_type_name<decltype(ptrToArr)>(); f(ptrToArr);
+     std::cout << boost_type_name<decltype(carr)>(); f(carr);
+     std::cout << boost_type_name<decltype(ptrToCArr)>(); f(ptrToCArr);
 
-    std::cout << boost_type_name<decltype(someFunc)>(); f(someFunc);
+     std::cout << boost_type_name<decltype(someFunc)>(); f(someFunc);
 
 
 #ifdef TYPE_T_RREF
-    std::cout << " number 12 "; f(12);
+     std::cout << " number 12 "; f(12);
 #endif // TYPE_RREF
 
 
@@ -323,41 +330,41 @@ int main()
 
 #ifdef PART1_2
 
-    auto x(20); cout << boost_type_name<decltype(x)>() << endl;
-    auto& y = x; cout << boost_type_name<decltype(y)>() << endl;
-    auto&& z = 30; cout << boost_type_name<decltype(z)>() << endl;
+     auto x(20); cout << boost_type_name<decltype(x)>() << endl;
+     auto& y = x; cout << boost_type_name<decltype(y)>() << endl;
+     auto&& z = 30; cout << boost_type_name<decltype(z)>() << endl;
 
-    auto a{ 20 }; cout << boost_type_name<decltype(a)>() << endl;
-    auto b = { 20 }; cout << boost_type_name<decltype(b)>() << endl;
+     auto a{ 20 }; cout << boost_type_name<decltype(a)>() << endl;
+     auto b = { 20 }; cout << boost_type_name<decltype(b)>() << endl;
 
 #endif
 
 #ifdef PART1_3
 
-    Point A;
-    std::cout << boost_type_name<decltype(A)>() << endl;
+     Point A;
+     std::cout << boost_type_name<decltype(A)>() << endl;
 
-    vector<int> ivec = { 1,2,3 };
-    std::cout << boost_type_name<decltype(ivec)>() << endl;
+     vector<int> ivec = { 1,2,3 };
+     std::cout << boost_type_name<decltype(ivec)>() << endl;
 
-    auto var1 = containerReturn(ivec, 0);
-    std::cout << boost_type_name<decltype(var1)>() << endl;
+     auto var1 = containerReturn(ivec, 0);
+     std::cout << boost_type_name<decltype(var1)>() << endl;
 
-    decltype(var1) var2;
-    std::cout << boost_type_name<decltype(var2)>() << endl;
+     decltype(var1) var2;
+     std::cout << boost_type_name<decltype(var2)>() << endl;
 
 
-    const int& cx = 1;
-    std::cout << boost_type_name<decltype(cx)>() << endl;
+     const int& cx = 1;
+     std::cout << boost_type_name<decltype(cx)>() << endl;
 
-    auto x2 = cx;
-    std::cout << boost_type_name<decltype(x2)>() << endl;
+     auto x2 = cx;
+     std::cout << boost_type_name<decltype(x2)>() << endl;
 
-    decltype(auto) x3 = cx;
-    std::cout << boost_type_name<decltype(x3)>() << endl;
+     decltype(auto) x3 = cx;
+     std::cout << boost_type_name<decltype(x3)>() << endl;
 
-    auto lambda = []() {return 3; };
-    std::cout << boost_type_name<decltype(lambda)>() << endl;
+     auto lambda = []() {return 3; };
+     std::cout << boost_type_name<decltype(lambda)>() << endl;
 
 
 
@@ -365,20 +372,20 @@ int main()
 #endif
 
 #ifdef PART1_4
-    int x = 5;
-    cout << typeid(x).name() << endl;
-    cout << boost_type_name<decltype(x)>() << endl;
-    cout << endl;
+     int x = 5;
+     cout << typeid(x).name() << endl;
+     cout << boost_type_name<decltype(x)>() << endl;
+     cout << endl;
 
-    const int& y = x;
-    cout << typeid(y).name() << endl;
-    cout << boost_type_name<decltype(y)>() << endl;
-    cout << endl;
+     const int& y = x;
+     cout << typeid(y).name() << endl;
+     cout << boost_type_name<decltype(y)>() << endl;
+     cout << endl;
 
-    Widjet w;
-    const Widjet& z = w;
-    cout << typeid(z).name() << endl;
-    cout << boost_type_name<decltype(z)>() << endl;
+     Widjet w;
+     const Widjet& z = w;
+     cout << typeid(z).name() << endl;
+     cout << boost_type_name<decltype(z)>() << endl;
 
 
 
@@ -386,183 +393,183 @@ int main()
 
 #ifdef PART2_1
 
-    //using auto in all parts of lambda
-    auto lambda = [](auto&& x, auto&& y) { cout << x + y << " " << boost_type_name<decltype(x + y)>() << endl; };
-   lambda(2,3);
-   lambda(1.4f, 5);
-   lambda(1, 5.1f);
+     //using auto in all parts of lambda
+     auto lambda = [](auto&& x, auto&& y) { cout << x + y << " " << boost_type_name<decltype(x + y)>() << endl; };
+     lambda(2, 3);
+     lambda(1.4f, 5);
+     lambda(1, 5.1f);
 
-   //declaring lambda without auto
-   std::function<bool(const int&, const int&)> lambdaF = [](const int& a, const int& b) {return a >= b; };
-   cout << std::boolalpha;
-   cout << lambdaF(1, 2)<<endl;
-   cout << lambdaF(4, 3) << endl;
+     //declaring lambda without auto
+     std::function<bool(const int&, const int&)> lambdaF = [](const int& a, const int& b) {return a >= b; };
+     cout << std::boolalpha;
+     cout << lambdaF(1, 2) << endl;
+     cout << lambdaF(4, 3) << endl;
 
 
 #endif 
 
 #ifdef PART2_2
-   vector<char> vecChar = { 'a','b','c' };
-   vector<int> vecInt = { 1,2,3 };
-   vector<bool> vecBool = { 1,1,0 };
+     vector<char> vecChar = { 'a','b','c' };
+     vector<int> vecInt = { 1,2,3 };
+     vector<bool> vecBool = { 1,1,0 };
 
-   auto c = vecChar[1];
-   auto i = vecInt[1];
-   auto b = vecBool[1];
+     auto c = vecChar[1];
+     auto i = vecInt[1];
+     auto b = vecBool[1];
 
-   cout << boolalpha;
-   cout << std::is_same<decltype(c),char>::value << endl;
-   cout << std::is_same<decltype(i),int>::value << endl;
-   cout << std::is_same<decltype(b),bool>::value << endl;
- 
+     cout << boolalpha;
+     cout << std::is_same<decltype(c), char>::value << endl;
+     cout << std::is_same<decltype(i), int>::value << endl;
+     cout << std::is_same<decltype(b), bool>::value << endl;
+
 #endif
 
 #ifdef PART3_1
 
-   bracer a; 
-   bracer b{};
-   a = b;
-   bracer c(" 123 ");
-   bracer d = c;
-  
-   bracer e();//function
+     bracer a;
+     bracer b{};
+     a = b;
+     bracer c(" 123 ");
+     bracer d = c;
 
-   bracer f( "1","2" );
-   bracer g{ "3","4" };
-   bracer h{ {} };
-   bracer i({});
+     bracer e();//function
+
+     bracer f("1", "2");
+     bracer g{ "3","4" };
+     bracer h{ {} };
+     bracer i({});
 
 #endif
 
 #ifdef PART3_2
-   
-   auto x = { nullptr };
-   auto y = { 0 };
-   auto z = { NULL };
-   auto c = { false };
-   cout << boost_type_name<decltype(x)><<endl;
-   cout << boost_type_name<decltype(y)> << endl;
-   cout << boost_type_name<decltype(z)> << endl;
-   cout << boost_type_name<decltype(c)> << endl;
- 
+
+     auto x = { nullptr };
+     auto y = { 0 };
+     auto z = { NULL };
+     auto c = { false };
+     cout << boost_type_name<decltype(x)> << endl;
+     cout << boost_type_name<decltype(y)> << endl;
+     cout << boost_type_name<decltype(z)> << endl;
+     cout << boost_type_name<decltype(c)> << endl;
+
 #endif
 
 #ifdef PART3_3
 
-   f(1, "23");
+     f(1, "23");
 
-   FPTD ff=f;
-   FPU fu = f;
-   
-   ff(4, std::string("56"));
-   fu(7, std::string("89"));
+     FPTD ff = f;
+     FPU fu = f;
+
+     ff(4, std::string("56"));
+     fu(7, std::string("89"));
 
 
-   mapVec<int> mv{ {{1, 2, 3, 4},10} };
-   cout << mv[{1, 2, 3, 4}] << endl;
+     mapVec<int> mv{ {{1, 2, 3, 4},10} };
+     cout << mv[{1, 2, 3, 4}] << endl;
 
 #endif
 
 #ifdef PART3_4
-   enum class iEnum: int { a=1, b=2, c=3 };
-   cout << static_cast<int>(iEnum::b) << endl;
+     enum class iEnum : int { a = 1, b = 2, c = 3 };
+     cout << static_cast<int>(iEnum::b) << endl;
 
-   constexpr auto lambda = []<typename E>(E enumerator) { return static_cast<underlying_type_t<E>>(enumerator); };
-   cout << lambda(iEnum::c);
+     constexpr auto lambda = []<typename E>(E enumerator) { return static_cast<underlying_type_t<E>>(enumerator); };
+     cout << lambda(iEnum::c);
 
 
 #endif
 
 #ifdef PART3_5
 
-  //deleters<int> dINT;   //error:no default constructor exists for class "deleters<int>"
-   deleters<int> dINT2(4);
-   deleters<int> dINT3(5);
-   //dINT2 = dINT3;	//error: function "deleters<T>::operator=(const deleters<T> &) [with T=int]"  cannot be referenced -- it is a deleted function
+     //deleters<int> dINT;   //error:no default constructor exists for class "deleters<int>"
+     deleters<int> dINT2(4);
+     deleters<int> dINT3(5);
+     //dINT2 = dINT3;	//error: function "deleters<T>::operator=(const deleters<T> &) [with T=int]"  cannot be referenced -- it is a deleted function
 
 #endif
 
 #ifdef PART3_6
 
 
-   std::unique_ptr<Base>    ptrBD = std::make_unique <Derived>();
-   std::unique_ptr<Base>    ptrBB = std::make_unique <Base>();
-   std::unique_ptr<Derived> ptrDD = std::make_unique <Derived>();
+     std::unique_ptr<Base>    ptrBD = std::make_unique <Derived>();
+     std::unique_ptr<Base>    ptrBB = std::make_unique <Base>();
+     std::unique_ptr<Derived> ptrDD = std::make_unique <Derived>();
 
-   //lvalue version call
-   ptrBB.get()->doWork();
-   ptrBD.get()->doWork();
-   ptrDD.get()->doWork();
+     //lvalue version call
+     ptrBB.get()->doWork();
+     ptrBD.get()->doWork();
+     ptrDD.get()->doWork();
 
-   //rvalue version call
-   ptrBB.get()->takeObject().doWork();
-   ptrBD.get()->takeObject().doWork();
-   //ptrDD.get()->takeObject().doWork();
- 
-  
+     //rvalue version call
+     ptrBB.get()->takeObject().doWork();
+     ptrBD.get()->takeObject().doWork();
+     //ptrDD.get()->takeObject().doWork();
+
+
 #endif
 
 #ifdef PART3_7
-   vector<int> vec = {0,1,2,3,4,5 };
-   auto iter = std::find_if(vec.cbegin(), vec.cend(), [](const int i) {return i % 2; });
-   //*iter = -1;
-   std::cout << *iter;
+     vector<int> vec = { 0,1,2,3,4,5 };
+     auto iter = std::find_if(vec.cbegin(), vec.cend(), [](const int i) {return i % 2; });
+     //*iter = -1;
+     std::cout << *iter;
 #endif
 
 #ifdef PART3_8
-    auto lambda = []() {};
-    cout << noexcept(lambda())<<endl;
-    cout << noexcept(func());
+     auto lambda = []() {};
+     cout << noexcept(lambda()) << endl;
+     cout << noexcept(func());
 
 #endif
 
 #ifdef PART3_9
 
-    constexpr const  X x(4);
-    constexpr auto y = x.mul(2);
-    std::cout << y;
+     constexpr const  X x(4);
+     constexpr auto y = x.mul(2);
+     std::cout << y;
 #endif // PART3_9
 
 #ifdef PART3_10
 
 
-    X x;
-    x.inc();
-    x.inc();
-    x.inc();
-    x.inc();
-    x.inc();
+     X x;
+     x.inc();
+     x.inc();
+     x.inc();
+     x.inc();
+     x.inc();
 
-    thread a([&]() {x.inc();});
-    thread b([&]() {x.inc(); });
-    thread c([&]() {x.inc(); });
-    thread d([&]() {x.inc(); });
-    thread e([&]() {x.inc(); });
+     thread a([&]() {x.inc(); });
+     thread b([&]() {x.inc(); });
+     thread c([&]() {x.inc(); });
+     thread d([&]() {x.inc(); });
+     thread e([&]() {x.inc(); });
 
-    a.join();
-    b.join();
-    c.join();
-    d.join();
-    e.join();
+     a.join();
+     b.join();
+     c.join();
+     d.join();
+     e.join();
 
 
 
 #endif
 
 #ifdef PART3_11
-    std::cout << "t#";
-    test t;
-    std::cout << std::endl;
-    std::cout << "tt#";
-    test tt;
-    std::cout << std::endl;
-    std::cout << "move#";
-    t=test();
-    std::cout << std::endl;
-    std::cout << "copy#";
-    t=tt;
-    std::cout << std::endl;
-   
+     std::cout << "t#";
+     test t;
+     std::cout << std::endl;
+     std::cout << "tt#";
+     test tt;
+     std::cout << std::endl;
+     std::cout << "move#";
+     t = test();
+     std::cout << std::endl;
+     std::cout << "copy#";
+     t = tt;
+     std::cout << std::endl;
+
 #endif
 
 #ifdef PART4_1
@@ -570,9 +577,21 @@ int main()
     std::unique_ptr<int> int_u_ptr = std::make_unique<int>(4);
     std::cout << "int_u_ptr = " << *int_u_ptr.get() << std::endl;
 
-    std::unique_ptr<int,decltype(deleter)> int_u_ptr_deleter;
-    int_u_ptr_deleter.reset(new int(5));
-    std::cout << "int_u_ptr_deleter = " << *int_u_ptr_deleter.get()<<std::endl;
+     
+    std::unique_ptr<int, decltype(deleter)> int_u_ptr_custom_deleter;
+    int_u_ptr_custom_deleter.reset(new int(5));
+    std::cout << "int_u_ptr_deleter = " << *int_u_ptr_custom_deleter.get() << std::endl;
+
+    
+    std::unique_ptr<int> int_u_ptr_custom_deleter2;
+    int_u_ptr_custom_deleter2.reset(new int(5));
+    std::cout << "int_u_ptr_deleter = " << *int_u_ptr_custom_deleter2.get() << std::endl;
+    
+    deleter2(int_u_ptr_custom_deleter2.release());//delete object here
+    if (int_u_ptr_custom_deleter2.release() == nullptr)cout << "managed object deleted" << endl;
+    else cout << "managed  object NOT deleted" << endl;
+
+    
 
 #endif
 
@@ -581,23 +600,58 @@ int main()
 
     
     shared_ptr<X> ptr1 = make_shared<X>(x);
-    cout << ptr1.use_count() << endl;
+    cout << "ptr1 - " << ptr1.use_count() << endl;
     cout  << endl;
 
     shared_ptr<X> ptr2 = ptr1;
-    cout << ptr1.use_count() << endl;
-    cout << ptr2.use_count() << endl;
+    cout << "ptr1 - " << ptr1.use_count() << endl;
+    cout << "ptr2 - " << ptr2.use_count() << endl;
+
     cout << endl;
 
     shared_ptr<X> ptr3 = std::move(ptr2);
-    cout << ptr1.use_count() << endl;
-    cout << ptr2.use_count() << endl;
-    cout << ptr3.use_count() << endl;
-    
+    cout << "ptr1 - " << ptr1.use_count() << endl;
+    cout << "ptr2 - " << ptr2.use_count() << endl;
+    cout << "ptr3 - " << ptr3.use_count() << endl;
+    cout << endl;
 
-    ptr1.get()->add_vec();
-    //ptr2.get()->add_vec();
-    ptr3.get()->add_vec();
+    shared_ptr<X> ptr4 = make_shared<X>(x);
+
+    cout <<"ptr1 - " << ptr1.use_count() << endl;
+    cout <<"ptr2 - " << ptr2.use_count() << endl;
+    cout <<"ptr3 - " << ptr3.use_count() << endl;
+    cout <<"ptr4 - " << ptr4.use_count() << endl;
+    cout << endl;
+
+    vector<shared_ptr<X>> vec;
+
+    vec.emplace_back(ptr1 -> from_this());
+    for (auto &s : vec)cout << s.use_count() << endl; cout << endl;
+
+    cout << "ptr1 - " << ptr1.use_count() << endl;
+    cout << "ptr2 - " << ptr2.use_count() << endl;
+    cout << "ptr3 - " << ptr3.use_count() << endl;
+    cout << "ptr4 - " << ptr4.use_count() << endl;
+    cout << endl;
+
+    vec.push_back(ptr3->from_this());
+    for (auto &s : vec)cout << s.use_count() << endl; cout << endl;
+
+    cout << "ptr1 - " << ptr1.use_count() << endl;
+    cout << "ptr2 - " << ptr2.use_count() << endl;
+    cout << "ptr3 - " << ptr3.use_count() << endl;
+    cout << "ptr4 - " << ptr4.use_count() << endl;
+    cout << endl;
+
+    vec.push_back(ptr4->from_this());
+    for (auto &s : vec)cout << s.use_count() << endl; cout << endl;
+
+    cout << "ptr1 - " << ptr1.use_count() << endl;
+    cout << "ptr2 - " << ptr2.use_count() << endl;
+    cout << "ptr3 - " << ptr3.use_count() << endl;
+    cout << "ptr4 - " << ptr4.use_count() << endl;
+    cout << endl;
+    
 
 #endif
 
