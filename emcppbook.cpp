@@ -34,9 +34,12 @@ std::string boost_type_name()
 //PART3_10 const functions - thread free
 //PART3_11 special funcs
 //PART4_1 unique_ptr 
-//PART3_2 shared_ptr 
+//PART4_2 shared_ptr 
+//PART4_3 weak_ptr
+//PART4_4 make instead of new
+//PART4_5 Pimpl - in this file -> no example
 
-#define PART4_2
+#define PART4_4
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -264,6 +267,22 @@ private:
 
 #endif
 
+#ifdef PART4_3
+
+#endif
+
+#ifdef PART4_4
+#include <string>
+#include "S:\Code\ikvasir\timedelay\timedelay.h"
+#include "S:\Code\ikvasir\timedelay\timedelay.cpp"
+
+ class bigData
+ {
+     int intData[1000];
+     string strData[1000];
+ };
+
+#endif
 
  int main()
  {
@@ -654,6 +673,58 @@ private:
     
 
 #endif
+
+#ifdef PART4_3
+
+    int x=4;
+
+    auto sp = std::make_shared<int>(x);
+    std::weak_ptr <int> wp(sp);
+    std::cout<<wp.use_count()<<" - " << sp.use_count()<<std::endl;
+    std::cout << std::endl;
+
+    auto sp2=sp;
+   
+    std::cout << wp.use_count() << " - " << sp.use_count() << std::endl;
+    std::cout << sp2.use_count()<< std::endl;
+    std::cout << std::endl;
+
+    std::weak_ptr <int> wp2(sp);
+    std::cout << wp.use_count() << " - " << sp.use_count() << std::endl;
+    std::cout << wp2.use_count() << " - " << sp2.use_count() << std::endl;
+    std::cout << std::endl;
+
+    std::cout << wp2.expired() << std::endl << std::endl;
+    auto sp3 = wp2.lock();
+    std::cout << wp.use_count() << " - " << sp.use_count() << std::endl;
+    std::cout << wp2.use_count() << " - " << sp2.use_count() << std::endl;
+    std::cout << sp3.use_count() << std::endl;
+    std::cout << std::endl;
+
+    std::cout<<wp2.expired() << std::endl << std::endl;
+
+#endif
+
+#ifdef PART4_4
+
+    timedelay T;
+
+    T.addTimer("usingNew");
+    std::vector<std::shared_ptr<bigData>> spPool1;
+    for (int i = 0; i < 10000; i++)
+        spPool1.push_back(std::shared_ptr<bigData>(new bigData));
+    std::cout << "usingNew = " << T.readTimer("usingNew") << "s." << std::endl;
+
+    T.addTimer("usingMake");
+    std::vector<std::shared_ptr<bigData>> spPool2;
+    for (int i = 0; i < 10000; i++)
+        spPool2.push_back(std::make_shared<bigData>());
+    std::cout << "usingMake = " << T.readTimer("usingMake") <<"s."<< std::endl;
+
+    //for 10000 at my pcresult is 7.684s at new and 7,396s at Make
+
+#endif
+
 
     return 0;
 }
