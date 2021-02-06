@@ -39,8 +39,9 @@ std::string boost_type_name()
 //PART4_4 make instead of new
 //PART4_5 Pimpl - in this file -> no example
 //PART5_1 move & forward
+//PART5_2 rvalu references
 
-#define PART5_1
+#define PART5_2
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -291,6 +292,11 @@ private:
     std::cout<<boost_type_name<decltype(x)>()<<std::endl;
  };
 #endif
+
+#ifdef PART5_2
+
+#endif
+
  int main()
  {
 
@@ -759,6 +765,23 @@ private:
     std::cout << boost_type_name<decltype(y3)>() << " -------> " << boost_type_name<decltype(std::forward<decltype(x3)>(x3))>() << std::endl;
     std::cout << boost_type_name<decltype(y4)>() << " -------> " << boost_type_name<decltype(std::forward<decltype(x4)>(x4))>() << std::endl;
     std::cout << boost_type_name<decltype(y5)>() << " -------> " << boost_type_name<decltype(std::forward<decltype(x5)>(x5))>() << std::endl;
+#endif
+
+#ifdef PART5_2
+    int x = 1;
+    auto&& x2 = x;
+    auto&& x3 = 2;
+  
+
+    std::cout << boost_type_name<decltype(x)>() << std::endl;
+    std::cout << boost_type_name<decltype(x2)>() << std::endl;
+    std::cout << boost_type_name<decltype(x3)>() << std::endl;
+
+    auto lambda = []<typename T>(T&& x)->decltype(x) { return x; };
+
+    std::cout << boost_type_name<decltype(lambda(x))>() << std::endl;
+    std::cout << boost_type_name<decltype(lambda(3))>() << std::endl;
+
 #endif
 
     return 0;
