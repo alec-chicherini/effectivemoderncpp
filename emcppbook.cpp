@@ -38,8 +38,9 @@ std::string boost_type_name()
 //PART4_3 weak_ptr
 //PART4_4 make instead of new
 //PART4_5 Pimpl - in this file -> no example
+//PART5_1 move & forward
 
-#define PART4_4
+#define PART5_1
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -284,6 +285,12 @@ private:
 
 #endif
 
+#ifdef PART5_1
+ void f(int&& x)
+ {
+    std::cout<<boost_type_name<decltype(x)>()<<std::endl;
+ };
+#endif
  int main()
  {
 
@@ -725,6 +732,34 @@ private:
 
 #endif
 
+#ifdef PART5_1
+    
+    f(1);
+    int x = 4;
+    int* x2 = new int(4);
+    int& x3 = x;
+    int&& x4 = 5;
+    auto&& x5 = x;
+    
+    std::cout << boost_type_name<decltype(x)>()  << " -------> " << boost_type_name<decltype(std::move(x))>()  << std::endl;
+    std::cout << boost_type_name<decltype(x2)>() << " -------> " << boost_type_name<decltype(std::move(x2))>() << std::endl;
+    std::cout << boost_type_name<decltype(x3)>() << " -------> " << boost_type_name<decltype(std::move(x3))>() << std::endl;
+    std::cout << boost_type_name<decltype(x4)>() << " -------> " << boost_type_name<decltype(std::move(x4))>() << std::endl;
+    std::cout << boost_type_name<decltype(x5)>() << " -------> " << boost_type_name<decltype(std::move(x5))>() << std::endl;
+    std::cout << std::endl;
+
+    int y = 4;
+    int* y2 = new int(4);
+    int& y3 = y;
+    int&& y4 = 5;
+    auto&& y5 = x;
+
+    std::cout << boost_type_name<decltype(y)>() << " -------> " << boost_type_name<decltype(std::forward<decltype(x)>(x))>() << std::endl;
+    std::cout << boost_type_name<decltype(y2)>() << " -------> " << boost_type_name<decltype(std::forward<decltype(x2)>(x2))>() << std::endl;
+    std::cout << boost_type_name<decltype(y3)>() << " -------> " << boost_type_name<decltype(std::forward<decltype(x3)>(x3))>() << std::endl;
+    std::cout << boost_type_name<decltype(y4)>() << " -------> " << boost_type_name<decltype(std::forward<decltype(x4)>(x4))>() << std::endl;
+    std::cout << boost_type_name<decltype(y5)>() << " -------> " << boost_type_name<decltype(std::forward<decltype(x5)>(x5))>() << std::endl;
+#endif
 
     return 0;
 }
