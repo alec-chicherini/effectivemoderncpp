@@ -39,9 +39,11 @@ std::string boost_type_name()
 //PART4_4 make instead of new
 //PART4_5 Pimpl - in this file -> no example
 //PART5_1 move & forward
-//PART5_2 rvalu references
+//PART5_2 rvalue references
+//PART5_3 rvalue with and without forward
+//PART5_4
 
-#define PART5_2
+#define PART5_3
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -295,6 +297,11 @@ private:
 
 #ifdef PART5_2
 
+#endif
+
+#ifdef PART5_3
+#include "S:\Code\ikvasir\timedelay\timedelay.h"
+#include "S:\Code\ikvasir\timedelay\timedelay.cpp"
 #endif
 
  int main()
@@ -781,6 +788,35 @@ private:
 
     std::cout << boost_type_name<decltype(lambda(x))>() << std::endl;
     std::cout << boost_type_name<decltype(lambda(3))>() << std::endl;
+
+#endif
+
+#ifdef PART5_3
+    timedelay Td;
+
+    auto lambda = [](int&& x) {return x; };
+    auto lambda2 = [](int&& x) {return std::move(x); };
+
+    int x = 4;
+
+    auto lambda3 = [=]() {return x; };
+    auto lambda4 = [&]() {return std::move(x); };
+
+    Td.addTimer("lambda_direct");
+    for (int i = 0; i < 100000; i++)lambda(4);
+    std::cout << Td.readTimer("lambda_direct") << std::endl;
+
+    Td.addTimer("lambda_move");
+    for (int i = 0; i < 100000; i++)lambda2(4);
+    std::cout << Td.readTimer("lambda_move") << std::endl;
+
+    Td.addTimer("lambda_direct2");
+    for (int i = 0; i < 100000; i++)lambda3();
+    std::cout << Td.readTimer("lambda_direct2") << std::endl;
+
+    Td.addTimer("lambda_move2");
+    for (int i = 0; i < 100000; i++)lambda4();
+    std::cout << Td.readTimer("lambda_move2") << std::endl;
 
 #endif
 
