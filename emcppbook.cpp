@@ -41,9 +41,10 @@ std::string boost_type_name()
 //PART5_1 move & forward
 //PART5_2 rvalue references
 //PART5_3 rvalue with and without forward
-//PART5_4
+//PART5_4 no universal reference overloading
+//PART5_5 descriptor dispatch
 
-#define PART5_3
+#define PART5_5
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -256,7 +257,6 @@ private:
 
 #endif
 
-
 #ifdef PART4_2
 #include <vector>
 #include <memory>
@@ -302,6 +302,83 @@ private:
 #ifdef PART5_3
 #include "S:\Code\ikvasir\timedelay\timedelay.h"
 #include "S:\Code\ikvasir\timedelay\timedelay.cpp"
+#endif
+
+#ifdef PART5_4
+#include <vector>
+#include "S:\Code\ikvasir\timedelay\timedelay.h"
+#include "S:\Code\ikvasir\timedelay\timedelay.cpp"
+
+ std::vector<std::string> vec;
+ std::vector<std::string> vec2;
+
+
+ template<typename T>
+ void add_forward(T&& x)
+ {
+     vec.push_back(std::forward<T>(x));
+ }
+
+ void add_copy(std::string x)
+ {
+     vec2.push_back(x);
+ }
+#endif
+
+#ifdef PART5_5
+ template<typename T>
+ void funcImpl(T&& x, std::false_type)
+ {
+     std::cout << "funcImpl - non integer" << std::endl;
+ };
+
+ template<typename T>
+ void funcImpl(T&& x, std::true_type)
+ {
+     std::cout << "funcImpl - integer" << std::endl;
+ };
+
+ template<typename T>
+ void func(T&& x)
+ {
+     using T_deref = std::remove_reference_t<T>;
+     funcImpl(std::forward<T>(x), std::is_integral<T_deref>());
+ };
+
+ class A
+ {
+ public:
+
+     template<typename T>
+         void funcImpl(T&& x, std::true_type, std::false_type)
+     {
+         std::cout << "Iternal type object passed to func" << std::endl;
+     };
+
+     template<typename T>
+         void funcImpl(T&& x, std::false_type, std::true_type)
+     {
+         std::cout << "A object passed to func" << std::endl;
+     };
+
+     template<typename T>
+         void funcImpl(T&& x, std::false_type, std::false_type)
+     {
+         std::cout << "Undefined object pass to func" << std::endl;
+     };
+
+     template<typename T>
+     void func(T&& x)
+     {
+         funcImpl(std::forward<T>(x),
+             std::is_fundamental<std::decay_t<T>>(),
+             std::is_same<std::decay_t<T>, A>());
+     };
+
+ };
+
+ class B {};
+
 #endif
 
  int main()
@@ -820,5 +897,35 @@ private:
 
 #endif
 
+#ifdef PART5_4
+    timedelay Td;
+
+    std::string  x;
+    x.resize(10000, '0');
+
+    Td.addTimer("forward");
+    for (int i = 0; i < 100000; i++)add_forward(x);
+    std::cout << Td.readTimer("forward") << std::endl;
+
+    Td.addTimer("copy");
+    for (int i = 0; i < 100000; i++)add_copy(x);
+    std::cout << Td.readTimer("copy") << std::endl;
+
+#endif
+
+#ifdef PART5_5
+    func(1);
+    func("str");
+    func(1.2);
+    std::cout << std::endl;
+
+    A a, b;
+    a.func(b);
+    a.func(2);
+    B c;
+
+    a.func(c);
+
+#endif
     return 0;
 }
