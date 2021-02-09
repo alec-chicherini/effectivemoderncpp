@@ -43,8 +43,9 @@ std::string boost_type_name()
 //PART5_3 rvalue with and without forward
 //PART5_4 no universal reference overloading
 //PART5_5 descriptor dispatch
+//PART5_6 reference collapsing
 
-#define PART5_5
+#define PART5_6
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -378,6 +379,11 @@ private:
  };
 
  class B {};
+
+#endif
+
+#ifdef PART5_6
+
 
 #endif
 
@@ -926,6 +932,30 @@ private:
 
     a.func(c);
 
+#endif
+
+#ifdef PART5_6
+
+    auto r = []() {return 5; };
+
+    int x(0);
+    std::cout << boost_type_name<decltype(x)>() << std::endl;
+    auto& xl = x; //(& _)
+    std::cout << boost_type_name<decltype(xl)>() << std::endl;
+    auto&& xr = x; //(&& _)
+    std::cout << boost_type_name<decltype(xr)>() << std::endl;
+   // auto& xl2 = r();  //(& &&)
+   // std::cout << boost_type_name<decltype(xl2)>() << std::endl;
+    auto&& xr2 = xl;//(&& &)
+    std::cout << boost_type_name<decltype(xr2)>() << std::endl;
+    auto&& xr3 = r();//(&& &&)
+    std::cout << boost_type_name<decltype(xr3)>() << std::endl;
+    auto& xl3 = xl;//(& &)
+    std::cout << boost_type_name<decltype(xl3)>() << std::endl;
+    auto x2 = xl;//(_ &)
+    std::cout << boost_type_name<decltype(x2)>() << std::endl;
+    auto x3 = r();//(_ &&)
+    std::cout << boost_type_name<decltype(x3)>() << std::endl;
 #endif
     return 0;
 }
