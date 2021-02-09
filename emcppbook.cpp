@@ -44,8 +44,9 @@ std::string boost_type_name()
 //PART5_4 no universal reference overloading
 //PART5_5 descriptor dispatch
 //PART5_6 reference collapsing
+//PART5_7 moving not always faster
 
-#define PART5_6
+#define PART5_7
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -385,6 +386,13 @@ private:
 #ifdef PART5_6
 
 
+#endif
+
+#ifdef PART5_7
+#include "S:\Code\ikvasir\timedelay\timedelay.h"
+#include "S:\Code\ikvasir\timedelay\timedelay.cpp"
+#include <vector>
+#include <array>
 #endif
 
  int main()
@@ -956,6 +964,43 @@ private:
     std::cout << boost_type_name<decltype(x2)>() << std::endl;
     auto x3 = r();//(_ &&)
     std::cout << boost_type_name<decltype(x3)>() << std::endl;
+#endif
+
+#ifdef PART5_7
+    timedelay Td;
+    
+    std::vector<int> vec(100);
+    std::array<int, 100> arr; arr.fill(4);
+    std::string str; str.resize(1000, 'a');
+    std::string str2; str2.resize(10, 'z');
+   
+
+    auto lambda1 = [&]() {return vec; };
+    auto lambda2 = [&]() {return std::move(vec); };
+    auto lambda3 = [&]() {return arr; };
+    auto lambda4 = [&]() {return std::move(arr); };
+    auto lambda5 = [&]() {return str; };
+    auto lambda6 = [&]() {return std::move(str); };
+    auto lambda7 = [&]() {return str2; };
+    auto lambda8 = [&]() {return std::move(str2); };
+
+   
+    auto test = [&](auto fn, std::string timer_name) {
+        
+        Td.addTimer(timer_name);
+        for (int i = 0; i < 100000; i++)fn();
+        std::cout << Td.readTimer(timer_name)*100 ;
+    };
+    std::cout << "copy       move" << std::endl;
+    test(lambda1, "1"); std::cout <<" ";
+    test(lambda2, "2"); std::cout << std::endl;
+    test(lambda3, "3"); std::cout << " ";
+    test(lambda4, "4"); std::cout << std::endl;
+    test(lambda5, "5"); std::cout << " ";
+    test(lambda6, "6"); std::cout << std::endl;
+    test(lambda7, "7"); std::cout << " ";
+    test(lambda8, "8"); std::cout << std::endl;
+
 #endif
     return 0;
 }
