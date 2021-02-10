@@ -45,8 +45,9 @@ std::string boost_type_name()
 //PART5_5 descriptor dispatch
 //PART5_6 reference collapsing
 //PART5_7 moving not always faster
+//PART5_8 perfect forwarding
 
-#define PART5_7
+#define PART5_8
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -394,6 +395,33 @@ private:
 #include <vector>
 #include <array>
 #endif
+
+#ifdef PART5_8
+
+ auto lambda = []<typename T>(T x) { std::cout << boost_type_name<T>()<<" "; };
+
+ template<typename... Ts>
+ void f(Ts... params)
+ {
+     (lambda(params), ...); std::cout << std::endl;
+     (std::cout<<...<<params) << std::endl;
+     
+ }
+
+ template<typename ...Ts>
+ void fwd(Ts&& ... params)
+ {
+     f(std::forward<Ts>(params)...);
+ }
+
+ struct A
+ {
+     int x, y;
+ };
+
+ 
+#endif
+
 
  int main()
  {
@@ -1000,6 +1028,27 @@ private:
     test(lambda6, "6"); std::cout << std::endl;
     test(lambda7, "7"); std::cout << " ";
     test(lambda8, "8"); std::cout << std::endl;
+
+#endif
+
+
+#ifdef PART5_8
+ 
+
+       std::cout << std::endl;
+       int *x = new int(1);
+       float y = 2.3;
+       std::string z = "4";
+       fwd(*x,y,z);
+
+       A a;
+       a.x = 1;
+       a.y = 2;
+    
+      // int&& b = a.x; //ERROR
+       auto && b = a.x; //cast to lvalue ref
+       std::cout << boost_type_name<decltype(b)>() << std::endl;
+
 
 #endif
     return 0;
