@@ -46,8 +46,10 @@ std::string boost_type_name()
 //PART5_6 reference collapsing
 //PART5_7 moving not always faster
 //PART5_8 perfect forwarding
+//PART6_1 lambda captures
+//PART6_2 lambda move capture
 
-#define PART5_8
+#define PART6_2
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -422,6 +424,108 @@ private:
  
 #endif
 
+#ifdef PART6_1
+#include <vector>
+#include <map>
+#include <iterator>
+#include <algorithm>
+
+ template <typename T>
+ struct is_vector { static const bool value = false; };
+
+ template <typename T, typename A>
+ struct is_vector <std::vector<T, A>>{static const bool value = true; };
+
+ template <typename T>
+ struct is_map { static const bool value = false; };
+
+ template <typename T, typename A, typename K, typename C>
+ struct is_map <std::map<T,A,K,C>> { static const bool value = true; };
+
+ template<typename C>
+ void ContainerFill(C& container, const int size)
+ {
+      if constexpr (is_vector<C>::value)
+     for (int i = 0; i < size; i++)container.push_back(rand());
+
+      if constexpr (is_map<C>::value)
+     for (int i = 0; i < size; i++)container.insert(std::make_pair(i,rand()));
+ }
+
+ template<typename C>
+ void ContainerSize(const C& container)
+ {
+     std::cout << "container type = " << boost_type_name<C>() << std::endl;
+     std::cout << "container.size() = "<< container.size() << std::endl;
+ }
+
+ template<typename C>
+ void ContainerErase( C& container)
+ {
+     for (auto it = container.begin(); it != container.end();)
+     {
+        it=container.erase(it);
+     }
+
+     std::cout << "Container Ereased "<<std::endl;
+ }
+
+ template<typename C>
+ void ContainerPrint(C& container)
+ {
+     if constexpr (is_vector<C>::value)
+         for (auto& i : container)std::cout << i << " ";
+
+     if constexpr (is_map<C>::value)
+         for (auto& i : container)std::cout << i.first <<"-"<<i.second<< " ";
+
+  
+     std::cout << std::endl;
+ }
+
+ template<typename C>
+ void ContainerRemoveOdd(C& container)
+ {
+     if constexpr (is_vector<C>::value)
+         for(auto it=container.begin(); it!=container.end();)
+         {
+             if (*it % 2 == 1)it = container.erase(it);
+             else ++it;
+         }
+     if constexpr (is_map<C>::value)
+         for (auto it = container.begin(); it != container.end();)
+         {
+             if (it->second % 2 == 1)it = container.erase(it);
+             else ++it;
+         }
+     
+ };
+
+ template<typename C>
+ void ContainerCheck(C& container)
+ {
+     int divider = 2;
+     if constexpr (is_vector<C>::value){
+     if (std::all_of(begin(container), end(container), [&](const auto& value) {return value % divider == 0; }))
+         std::cout<<"All in this container devide by "<< divider<<std::endl;
+     else
+         std::cout << "NOT All in this container devide by " << divider << std::endl;
+     }
+
+     if constexpr (is_map<C>::value) {
+         if (std::all_of(begin(container), end(container), [&](const auto& value) {return value.second % divider == 0; }))
+             std::cout << "All in this container devide by " << divider << std::endl;
+         else
+             std::cout << "NOT All in this container devide by " << divider << std::endl;
+     }
+     
+ }
+#endif
+
+#ifdef PART6_2
+#include <array>
+    
+#endif
 
  int main()
  {
@@ -1031,7 +1135,6 @@ private:
 
 #endif
 
-
 #ifdef PART5_8
  
 
@@ -1049,6 +1152,55 @@ private:
        auto && b = a.x; //cast to lvalue ref
        std::cout << boost_type_name<decltype(b)>() << std::endl;
 
+
+#endif
+
+#ifdef PART6_1
+       std::map<int, int> mp;
+       std::vector<int> vec;
+
+       ContainerFill(vec, 10);
+       ContainerFill(mp, 10);
+
+       ContainerSize(mp);
+       ContainerSize(vec);
+
+       ContainerPrint(vec);
+       ContainerPrint(mp);
+
+       ContainerCheck(vec);
+       ContainerCheck(mp);
+
+       ContainerRemoveOdd(vec);
+       ContainerRemoveOdd(mp);
+
+       ContainerPrint(vec);
+       ContainerPrint(mp);
+
+       ContainerCheck(vec);
+       ContainerCheck(mp);
+
+       ContainerErase(mp);
+       ContainerErase(vec);
+
+       ContainerSize(mp);
+       ContainerSize(vec);
+
+#endif
+
+#ifdef PART6_2
+       std::array<int, 3> A{1,2,3};
+       auto prnt = [&] {for (auto& x : A)std::cout << x << " "; std::cout << std::endl; };
+       auto func = [&](int mul) {for (auto& d : A) d *= mul; };
+       auto func2 = [data = std::move(A)](){for (auto& d : data) std::cout << d << " "; std::cout << std::endl; };
+
+       prnt();
+       func(3);
+       prnt();
+       func2();
+       prnt();
+
+ 
 
 #endif
     return 0;
