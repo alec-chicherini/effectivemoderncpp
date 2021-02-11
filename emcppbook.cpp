@@ -48,8 +48,9 @@ std::string boost_type_name()
 //PART5_8 perfect forwarding
 //PART6_1 lambda captures
 //PART6_2 lambda move capture
+//PART6_3 decltype for lambda
 
-#define PART6_2
+#define PART6_3
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -525,6 +526,10 @@ private:
 #ifdef PART6_2
 #include <array>
     
+#endif
+
+#ifdef PART6_3
+
 #endif
 
  int main()
@@ -1201,6 +1206,36 @@ private:
        prnt();
 
  
+
+#endif
+
+#ifdef PART6_3
+       auto lambda = [](auto&& x) {return std::forward<decltype(x)>(x); };
+       auto lambda2 = []<typename T>(T && x) { return std::forward<T>(x); };
+       auto lambda_type_print = [](auto&& t) { std::cout << boost_type_name<decltype(t)>() << std::endl; };
+
+       int i = 0;
+
+       std::cout << boost_type_name<decltype(i)>() << std::endl;
+       std::cout << boost_type_name<decltype(lambda(i))>() << std::endl;
+       std::cout << boost_type_name<decltype(lambda2(i))>() << std::endl;
+       std::cout << std::endl;
+       lambda_type_print(i);  std::cout << std::endl;
+
+       int& ii = i;
+       std::cout << boost_type_name<decltype(ii)>() << std::endl;
+       std::cout << boost_type_name<decltype(lambda(ii))>() << std::endl;
+       std::cout << boost_type_name<decltype(lambda2(ii))>() << std::endl;
+       std::cout << std::endl;
+
+       lambda_type_print(ii);  std::cout << std::endl;
+
+       int&&iii = 1;
+       std::cout << boost_type_name<decltype(iii)>() << std::endl;
+       std::cout << boost_type_name<decltype(lambda(iii))>() << std::endl;
+       std::cout << boost_type_name<decltype(lambda2(iii))>() << std::endl;
+       std::cout << std::endl;
+       lambda_type_print(iii);  std::cout << std::endl;
 
 #endif
     return 0;
