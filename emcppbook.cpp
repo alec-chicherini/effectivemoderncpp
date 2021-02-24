@@ -49,8 +49,10 @@ std::string boost_type_name()
 //PART6_1 lambda captures
 //PART6_2 lambda move capture
 //PART6_3 decltype for lambda
+//PART6_4 std::bind vs lambda
+//PART7_1 thread and async
 
-#define PART6_3
+#define PART7_1
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -525,12 +527,32 @@ private:
 
 #ifdef PART6_2
 #include <array>
-    
 #endif
 
 #ifdef PART6_3
 
 #endif
+
+#ifdef PART6_4
+#include <functional>
+ using namespace std::placeholders;
+ void print(std::string a, std::string b, std::string c) { std::cout << a << b << c<<std::endl; }
+#endif
+
+#ifdef PART7_1
+
+//#define TEST_MAX_THREAD
+#define TEST_MAX_THREAD_ASYNC
+#include <chrono>
+#include <thread>
+#include <future>
+#include <vector>
+
+ void func(){ std::this_thread::sleep_for(std::chrono::seconds(1000)); }
+
+#endif
+
+
 
  int main()
  {
@@ -1238,5 +1260,33 @@ private:
        lambda_type_print(iii);  std::cout << std::endl;
 
 #endif
+
+#ifdef PART6_4
+
+       print("1", "2", "3");
+       auto print2 = std::bind(print, _3, _1, _2);
+       print2("1", "2", "3");
+#endif
+
+#ifdef PART7_1
+       std::vector<std::thread> t_vec;
+       std::vector<std::future<void>> f_vec;
+       while (1) {
+
+#ifdef TEST_MAX_THREAD//after starting 10K+ thread nothing happen.
+           t_vec.push_back(std::thread(func));
+           std::cout << t_vec.size() << std::endl;
+#endif
+
+
+#ifdef TEST_MAX_THREAD_ASYNC//the same
+           f_vec.push_back(std::async(func));
+           std::cout << f_vec.size() << std::endl;
+#endif
+
+           
+       
+       };
+#endif//PART7_1
     return 0;
 }
