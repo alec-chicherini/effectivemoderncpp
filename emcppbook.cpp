@@ -51,8 +51,10 @@ std::string boost_type_name()
 //PART6_3 decltype for lambda
 //PART6_4 std::bind vs lambda
 //PART7_1 thread and async
+//PART7_2 std::launch::async
+//PART7_3 std::thread - > detach
 
-#define PART7_1
+#define PART7_3
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -552,7 +554,34 @@ private:
 
 #endif
 
+#ifdef PART7_2
 
+#include <thread>
+#include <future>
+
+
+ void func() { std::this_thread::sleep_for(std::chrono::seconds(1)); }
+
+ auto func2 = []< typename...Ts >(Ts&&...params) { (std::cout << ... << params)  << std::endl; };
+
+ template<typename ... Ts, typename F>
+ auto
+ reallyAsync(F&& f, Ts&&... params)
+ {
+     
+     return std::async(std::launch::async,
+            f,
+            std::forward<Ts>(params)...);
+ }
+
+#endif
+
+#ifdef PART7_3
+
+
+
+
+#endif
 
  int main()
  {
@@ -1288,5 +1317,18 @@ private:
        
        };
 #endif//PART7_1
+
+#ifdef PART7_2
+       
+    auto fut = reallyAsync(func);//simple function call
+    auto fut2 = reallyAsync(func2);//template lambda function call
+
+#endif
+
+#ifdef PART7_3
+
+
+
+#endif
     return 0;
 }
