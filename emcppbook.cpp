@@ -52,7 +52,7 @@ std::string boost_type_name()
 //PART6_4 std::bind vs lambda
 //PART7_1 thread and async
 //PART7_2 std::launch::async
-//PART7_3 std::thread - > detach
+//PART7_3 std::thread joinable and not
 
 #define PART7_3
 //////////////////////////////////////////////
@@ -577,8 +577,30 @@ private:
 #endif
 
 #ifdef PART7_3
+#include <thread>
 
+ class ThreadRAII
+ {
+ public:
+     enum class DtorAction { join, detach };
 
+     ThreadRAII(std::thread&& t, DtorAction a) :action(a), t(std::move(t)) {}
+     ThreadRAII() = delete;
+     ThreadRAII(ThreadRAII&&) = default;
+     ThreadRAII& operator=(ThreadRAII&&) = default;
+     ~ThreadRAII() {
+         if (t.joinable()) {
+             if (action == DtorAction::join)t.join();
+                 else t.detach();
+         };
+     };
+     std::thread& get() { return t; }
+
+ private:
+     DtorAction action;
+     std::thread t;
+ 
+ };
 
 
 #endif
@@ -1327,7 +1349,8 @@ private:
 
 #ifdef PART7_3
 
-
+    ThreadRAII tr1(std::thread([] {std::cout << "ThreadRAII cover1 . joined \n"; }), ThreadRAII::DtorAction::join);
+    ThreadRAII tr2(std::thread([] {std::cout << "ThreadRAII cover2 . detached \n"; }), ThreadRAII::DtorAction::detach);
 
 #endif
     return 0;
