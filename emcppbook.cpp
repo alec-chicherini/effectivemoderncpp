@@ -53,8 +53,9 @@ std::string boost_type_name()
 //PART7_1 thread and async
 //PART7_2 std::launch::async
 //PART7_3 std::thread joinable and not
+//PART7_4 std::future dtor
 
-#define PART7_3
+#define PART7_4
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -603,6 +604,12 @@ private:
  };
 
 
+#endif
+
+#ifdef PART7_4
+#include <iostream>
+#include <future>
+#include <thread>
 #endif
 
  int main()
@@ -1352,6 +1359,26 @@ private:
     ThreadRAII tr1(std::thread([] {std::cout << "ThreadRAII cover1 . joined \n"; }), ThreadRAII::DtorAction::join);
     ThreadRAII tr2(std::thread([] {std::cout << "ThreadRAII cover2 . detached \n"; }), ThreadRAII::DtorAction::detach);
 
+#endif
+
+#ifdef PART7_4
+    //https://en.cppreference.com/w/cpp/thread/future
+    // future from a packaged_task
+    std::packaged_task<int()> task([] { return 7; }); // wrap the function
+    std::future<int> f1 = task.get_future();  // get a future
+    std::thread t(std::move(task)); // launch on a thread
+
+    // future from an async()
+    std::future<int> f2 = std::async(std::launch::async, [] { return 8; });
+
+
+    std::cout << "Waiting..." << std::flush;
+    f1.wait();
+    f2.wait();
+
+    std::cout << "Done!\nResults are: "
+        << f1.get() << ' ' << f2.get()  << '\n';
+    t.join();
 #endif
     return 0;
 }
