@@ -54,8 +54,9 @@ std::string boost_type_name()
 //PART7_2 std::launch::async
 //PART7_3 std::thread joinable and not
 //PART7_4 std::future dtor
+//PART7_5 conditinal varaible and future<void>
 
-#define PART7_4
+#define PART7_5
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -610,6 +611,51 @@ private:
 #include <iostream>
 #include <future>
 #include <thread>
+#endif
+
+#ifdef PART7_5
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <chrono>
+
+ std::mutex m;
+ std::condition_variable cv_first,cv_second;
+ bool ready_first = true;
+ bool ready_second = false;
+
+ void first() {
+     while (1) {
+       
+         std::unique_lock<std::mutex> lk(m);
+         cv_first.wait(lk, [] {return ready_second; }); ready_second = false;
+
+         auto now = std::chrono::high_resolution_clock::now();
+         std::this_thread::sleep_for(500ms);
+
+         auto delay = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now);
+         std::cout << "..f(" << delay.count() << "ms).." << std::flush;
+
+         ready_first = true; lk.unlock(); cv_second.notify_one();
+     };
+ }
+
+ void second() {
+     while (1) {
+
+         std::unique_lock<std::mutex> lk(m);
+         cv_second.wait(lk, [] {return ready_first; }); ready_first = false;
+
+         auto now = std::chrono::high_resolution_clock::now();
+         std::this_thread::sleep_for(250ms);
+
+         auto delay = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now);
+         std::cout << "..s(" << delay.count() << "ms).." << std::flush;
+
+         ready_second = true; lk.unlock(); cv_first.notify_one();
+     };
+ }
+
 #endif
 
  int main()
@@ -1379,6 +1425,13 @@ private:
     std::cout << "Done!\nResults are: "
         << f1.get() << ' ' << f2.get()  << '\n';
     t.join();
+#endif
+
+#ifdef PART7_5
+    std::thread f(first);
+    std::thread s(second);
+    f.join();
+    s.join();
 #endif
     return 0;
 }
