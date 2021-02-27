@@ -55,8 +55,9 @@ std::string boost_type_name()
 //PART7_3 std::thread joinable and not
 //PART7_4 std::future dtor
 //PART7_5 conditinal varaible and future<void>
+//PART7_6 std::atomic vc volatile
 
-#define PART7_5
+#define PART7_6
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -656,6 +657,11 @@ private:
      };
  }
 
+#endif
+
+#ifdef PART7_6
+#include <atomic>
+#include <thread>
 #endif
 
  int main()
@@ -1432,6 +1438,26 @@ private:
     std::thread s(second);
     f.join();
     s.join();
+#endif
+
+#ifdef PART7_6
+    std::atomic<int> ai=0;
+    volatile int vi = 0;//on count 10 000-100 000 this value not equal atomic
+    int i = 0;//on count 10 000-100 000 this value not equal atomic
+
+    int count = 1000;
+
+    while (count--) {
+
+        std::thread t1([&] {i++; vi++; ai++; });
+        std::thread t2([&] {i++; vi++; ai++; });
+       
+        t2.join();
+        t1.join();
+    };
+
+    std::cout << "ai = " << ai << " vi = " << vi << " i = " << i;
+
 #endif
     return 0;
 }
