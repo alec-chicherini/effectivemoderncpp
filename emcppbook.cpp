@@ -56,8 +56,9 @@ std::string boost_type_name()
 //PART7_4 std::future dtor
 //PART7_5 conditinal varaible and future<void>
 //PART7_6 std::atomic vc volatile
+//PART8_1 copy params in function
 
-#define PART7_6
+#define PART8_1
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -662,6 +663,14 @@ private:
 #ifdef PART7_6
 #include <atomic>
 #include <thread>
+#endif
+
+#ifdef PART8_1
+
+ void f(int i) { std::cout << " copy value->" << std::move(i) << std::endl; }
+ //void f(int& i) { std::cout <<" lvalue->"<< i<<std::endl; }
+ //void f(int&& i) { std::cout << " rvalue->" << std::move(i) << std::endl; }
+ //template<typename T>  void f(T&& i){ std::cout << " frwded_value->" << std::forward<T>(i) << std::endl; }
 #endif
 
  int main()
@@ -1445,7 +1454,7 @@ private:
     volatile int vi = 0;//on count 10 000-100 000 this value not equal atomic
     int i = 0;//on count 10 000-100 000 this value not equal atomic
 
-    int count = 1000;
+    int count = 100000;
 
     while (count--) {
 
@@ -1457,6 +1466,12 @@ private:
     };
 
     std::cout << "ai = " << ai << " vi = " << vi << " i = " << i;
+
+#endif
+
+#ifdef PART8_1
+    int i=4;
+    f(2);
 
 #endif
     return 0;
