@@ -55,10 +55,11 @@ std::string boost_type_name()
 //PART7_3 std::thread joinable and not
 //PART7_4 std::future dtor
 //PART7_5 conditinal varaible and future<void>
-//PART7_6 std::atomic vc volatile
+//PART7_6 std::atomic vs volatile
 //PART8_1 copy params in function
+//PART8_2 emplace_back vs push_back
 
-#define PART8_1
+#define PART8_2
 //////////////////////////////////////////////
 
 #ifdef PART1_1
@@ -671,6 +672,12 @@ private:
  //void f(int& i) { std::cout <<" lvalue->"<< i<<std::endl; }
  //void f(int&& i) { std::cout << " rvalue->" << std::move(i) << std::endl; }
  //template<typename T>  void f(T&& i){ std::cout << " frwded_value->" << std::forward<T>(i) << std::endl; }
+#endif
+
+
+#ifdef PART8_2
+#include <vector>
+#include <chrono>
 #endif
 
  int main()
@@ -1472,6 +1479,31 @@ private:
 #ifdef PART8_1
     int i=4;
     f(2);
+
+#endif
+
+#ifdef PART8_2
+    std::vector<std::string> vec1, vec2;
+    auto count = 1'000'000;//on my pc 1M -> 7041ms(push) vs 5093ms(emplace)
+
+    auto count2 = count;
+
+    auto now = std::chrono::high_resolution_clock::now();
+
+    while (count--)
+    {
+        vec1.push_back("1234567890");
+    }
+    
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count() <<"ms"<< std::endl;
+    now = std::chrono::high_resolution_clock::now();
+
+    while (count2--)
+    {
+        vec2.emplace_back("1234567890");
+    }
+
+    std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - now).count() <<"ms"<< std::endl;
 
 #endif
     return 0;
